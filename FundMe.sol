@@ -23,7 +23,9 @@ contract FundMe {
         return priceFeed.version();
     }
 
-    function getConvertionRate() public {
-
+    function getConvertionRate(uint256 ethAmount) public view returns (uint256 ethAmountInUsd) {
+        uint256 ethPrice = getPrice();
+        ethAmountInUsd = (ethPrice * ethAmount) / 1e18;
+        return ethAmountInUsd;
     }
 }
