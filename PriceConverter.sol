@@ -17,9 +17,9 @@ library PriceConverter {
         return priceFeed.version();
     }
 
-    function getConvertionRate(uint256 ethAmount) internal view returns (uint256 ethAmountInUsd) {
+    function getConvertionRate(uint256 ethAmount) internal view returns (uint256) {
         uint256 ethPrice = getPrice();
-        ethAmountInUsd = (ethPrice * ethAmount) / 1e18;
+        uint256 ethAmountInUsd = (ethPrice * ethAmount) / 1e18;
         return ethAmountInUsd;
     }
 }
