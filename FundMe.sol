@@ -11,13 +11,24 @@ contract FundMe {
     address[] public funders;
     mapping(address => uint256) public addressToAmountFounded;
 
+    address public owner;
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    modifier onlyOwner() {
+        require(msg.sender == owner, "Sender is not owner.");
+        _;
+    }
+
     function fund() public payable {
         require(msg.value.getConvertionRate() >= minimumUsd, "Did not send enough!");
         funders.push(msg.sender);
         addressToAmountFounded[msg.sender] += msg.value;
     }
 
-    function withdraw() public {
+    function withdraw() public onlyOwner {
         for (uint256 funderIndex = 0; funderIndex < funders.length; funderIndex++) {
             address funder = funders[funderIndex];
             addressToAmountFounded[funder] = 0;
