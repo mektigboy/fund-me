@@ -3,27 +3,34 @@ pragma solidity ^0.8.14;
 
 import "./PriceConverter.sol";
 
+error NotOwner();
+
 contract FundMe {
     using PriceConverter for uint256;
 
-    uint256 public minimumUsd = 50 * 1e18; // 1 * 10 ** 18
+    // Keyword constant saves more gas.
+    uint256 public constant MINIMUM_USD = 50 * 1e18; // 1 * 10 ** 18
 
     address[] public funders;
     mapping(address => uint256) public addressToAmountFounded;
 
-    address public owner;
+    // Keyword immutable means you are not going to change the variable.
+    address public immutable i_owner;
 
     constructor() {
-        owner = msg.sender;
+        i_owner = msg.sender;
     }
 
     modifier onlyOwner() {
-        require(msg.sender == owner, "Sender is not owner.");
+        // require(msg.sender == i_owner, "Sender is not i_owner.");
+        if (msg.sender != i_owner) {
+            revert NotOwner();
+        }
         _;
     }
 
     function fund() public payable {
-        require(msg.value.getConvertionRate() >= minimumUsd, "Did not send enough!");
+        require(msg.value.getConvertionRate() >= MINIMUM_USD, "Did not send enough!");
         funders.push(msg.sender);
         addressToAmountFounded[msg.sender] += msg.value;
     }
@@ -50,5 +57,13 @@ contract FundMe {
         // Returns 2 variables.
         (bool callSuccess,) = payable(msg.sender).call{value: address(this).balance}("");
         require(callSuccess, "Call failed.");
+    }
+
+    receive() external payable {
+        fund();
+    }
+
+    fallback() external payable {
+        fund();
     }
 }
