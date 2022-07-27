@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.14;
+pragma solidity ^0.8.15;
 
 import "./PriceConverter.sol";
 
@@ -8,13 +8,13 @@ error NotOwner();
 contract FundMe {
     using PriceConverter for uint256;
 
-    // Keyword constant saves more gas.
+    // Keyword <constant> saves more gas.
     uint256 public constant MINIMUM_USD = 50 * 1e18; // 1 * 10 ** 18
 
     address[] public funders;
     mapping(address => uint256) public addressToAmountFounded;
 
-    // Keyword immutable means you are not going to change the variable.
+    // Keyword <immutable> means you are not going to change the variable.
     address public immutable i_owner;
 
     constructor() {
@@ -41,19 +41,19 @@ contract FundMe {
             addressToAmountFounded[funder] = 0;
         }
 
-        // Reset "funders" array.
+        // Reset <funders> array.
         funders = new address[](0); // New array of addresses with 0 elements.
 
-        // Transfer
+        // Transfer:
         // Where msg.sender = address.
         // And payable(msg.sender) = payable address.
         // payable(msg.sender).transfer(address(this).balance);
 
-        // Send
+        // Send:
         // bool sendSuccess = payable(msg.sender).send(address(this).balance);
         // require(sendSuccess, "Send failed.");
 
-        // Call
+        // Call:
         // Returns 2 variables.
         (bool callSuccess,) = payable(msg.sender).call{value: address(this).balance}("");
         require(callSuccess, "Call failed.");
